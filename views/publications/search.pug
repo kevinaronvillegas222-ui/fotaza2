@@ -1,0 +1,61 @@
+extends ../layouts/main
+
+block content
+  .section-title
+    span
+    | Buscar publicaciones
+
+  .search-bar
+    form(method='GET', action='/publications/search')
+      .row.g-2.align-items-end
+        .col-md-5
+          label.form-label Palabras clave
+          input.form-control(type='text', name='q', value=query.q || '', placeholder='Título, descripción...')
+        .col-md-3
+          label.form-label Etiqueta
+          input.form-control(type='text', name='tag', value=query.tag || '', placeholder='naturaleza, retrato...')
+        .col-md-2
+          label.form-label Licencia
+          select.form-select(name='license')
+            option(value='') Todas
+            option(value='free', selected=query.license === 'free') Sin copyright
+            option(value='copyright', selected=query.license === 'copyright') Copyright
+        .col-md-2
+          button.btn-search.w-100(type='submit')
+            i.bi.bi-search.me-1
+            | Buscar
+
+  if rows
+    if rows.length
+      p(style='font-size:.85rem;color:#7b758f;margin-bottom:1rem') #{total} resultado#{total !== 1 ? 's' : ''} encontrado#{total !== 1 ? 's' : ''}
+      .photo-grid
+        each pub in rows
+          a.photo-card(href=`/publications/${pub.id}`)
+            .photo-card__thumb
+              if pub.cover
+                img(src=`/uploads/images/${pub.cover}`, alt=pub.title, loading='lazy')
+              else
+                .no-img
+                  i.bi.bi-image
+            .photo-card__body
+              .photo-card__title #{pub.title}
+              span.photo-card__author @#{pub.username}
+            .photo-card__footer
+              .star-rating
+                i.bi.bi-star-fill
+                | #{pub.avg_rating || '—'}
+              span #{new Date(pub.created_at).toLocaleDateString('es-AR')}
+
+      if pages > 1
+        .d-flex.justify-content-center.gap-2.mt-4
+          each p in Array.from({length: pages}, (_, i) => i+1)
+            a(href=`?q=${query.q||''}&tag=${query.tag||''}&license=${query.license||''}&page=${p}`,
+              style=`display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;font-size:.85rem;font-weight:600;text-decoration:none;background:${p===page?'var(--grad)':'var(--surface)'};color:${p===page?'#fff':'var(--text-muted)'};border:1.5px solid var(--border)`) #{p}
+    else
+      .empty-state
+        i.bi.bi-search
+        p No encontramos publicaciones con esos criterios.
+  else
+    .empty-state
+      i.bi.bi-images
+      p Usá los filtros para buscar fotografías.

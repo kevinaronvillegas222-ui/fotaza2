@@ -1,0 +1,198 @@
+extends ../layouts/main
+
+block content
+  if pub.status === 'pending_review'
+    .alert.alert-warning.mb-3
+      i.bi.bi-exclamation-triangle.me-2
+      | Esta publicación está bajo revisión y no puede modificarse.
+  if pub.status === 'taken_down'
+    .alert.alert-danger.mb-3
+      i.bi.bi-x-circle.me-2
+      | Esta publicación fue dada de baja.
+
+  .row.g-4
+    .col-lg-8
+
+      //- Header de publicación
+      .pub-header.mb-3
+        .d-flex.justify-content-between.align-items-start.flex-wrap.gap-2
+          div
+            h1 #{pub.title}
+            .d-flex.align-items-center.gap-2.mt-1
+              .comment-avatar(style='width:28px;height:28px;font-size:.7rem')
+                | #{pub.username.charAt(0).toUpperCase()}
+              a.photo-card__author(href=`/users/${pub.username}`) @#{pub.username}
+              span(style='color:#ccc') ·
+              span(style='font-size:.8rem;color:#aaa') #{new Date(pub.created_at).toLocaleDateString('es-AR')}
+          if isOwner && pub.status === 'active'
+            .dropdown
+              button.btn-action(data-bs-toggle='dropdown', style='gap:.3rem')
+                i.bi.bi-three-dots
+              ul.dropdown-menu.dropdown-menu-end
+                li
+                  form(method='POST', action=`/publications/${pub.id}/toggle-comments`)
+                    button.dropdown-item(type='submit')
+                      i.bi(class=pub.comments_open ? 'bi-chat-slash' : 'bi-chat', style='margin-right:.5rem')
+                      | #{pub.comments_open ? 'Cerrar comentarios' : 'Abrir comentarios'}
+        .mt-2
+          each tag in tags
+            a.tag-pill.me-1(href=`/publications/search?tag=${tag}`) ##{tag}
+
+      //- Imágenes
+      each img in images
+        .image-viewer.mb-3
+          img(src=`/uploads/images/${img.filename}`, alt=pub.title)
+          .image-viewer__actions
+            //- Rating display
+            .star-rating.me-auto
+              - var filled = Math.round(img.avg_rating)
+              each s in [1,2,3,4,5]
+                i.bi(class=s <= filled ? 'bi-star-fill' : 'bi-star', style='font-size:.85rem')
+              span.ms-1(style='font-size:.8rem;color:#aaa') #{img.avg_rating} (#{img.rating_count})
+
+            if user && !isOwner
+              //- Valorar
+              if !userRatings[img.id]
+                button.btn-action(data-bs-toggle='modal', data-bs-target=`#rateModal${img.id}`)
+                  i.bi.bi-star
+                  | Valorar
+              else
+                span.btn-action.active
+                  i.bi.bi-star-fill
+                  | #{userRatings[img.id]}★
+
+              //- Me interesa
+              if !userInterests[img.id]
+                form(method='POST', action=`/publications/images/${img.id}/interested`)
+                  button.btn-action(type='submit')
+                    i.bi.bi-heart
+                    | Me interesa
+              else
+                span.btn-action.active
+                  i.bi.bi-heart-fill
+                  | Interesado
+
+              //- Guardar
+              button.btn-action(data-bs-toggle='modal', data-bs-target=`#saveModal${img.id}`)
+                i.bi.bi-bookmark
+                | Guardar
+
+              //- Denunciar
+              button.btn-action.danger(data-bs-toggle='modal', data-bs-target=`#reportModal${img.id}`)
+                i.bi.bi-flag
+                | Denunciar
+
+            if img.license === 'copyright'
+              span(style='font-size:.75rem;color:#aaa;margin-left:auto')
+                i.bi.bi-c-circle.me-1
+                | Copyright
+
+          //- Modal valorar
+          if user && !isOwner
+            .modal.fade(id=`rateModal${img.id}`, tabindex='-1')
+              .modal-dialog.modal-sm
+                .modal-content
+                  .modal-header
+                    h5.modal-title Valorar imagen
+                    button.btn-close(data-bs-dismiss='modal')
+                  form(method='POST', action=`/publications/images/${img.id}/rate`)
+                    .modal-body
+                      label.form-label Puntuación
+                      select.form-select(name='score')
+                        each s in [1,2,3,4,5]
+                          option(value=s) #{s} ⭐
+                    .modal-footer
+                      button.btn-brand(type='submit', style='width:auto;padding:.4rem 1.2rem') Enviar
+
+            //- Modal denuncia imagen
+            .modal.fade(id=`reportModal${img.id}`, tabindex='-1')
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    h5.modal-title Denunciar imagen
+                    button.btn-close(data-bs-dismiss='modal')
+                  form(method='POST', action=`/publications/images/${img.id}/report`)
+                    .modal-body
+                      .mb-3
+                        label.form-label Motivo
+                        select.form-select(name='reason')
+                          option(value='contenido_inapropiado') Contenido inapropiado
+                          option(value='spam') Spam
+                          option(value='derechos_de_autor') Derechos de autor
+                          option(value='violencia') Violencia
+                          option(value='otro') Otro
+                      .mb-0
+                        label.form-label Descripción
+                        textarea.form-control(name='description', required, rows='3', placeholder='Explicá el motivo...')
+                    .modal-footer
+                      button.btn-close(data-bs-dismiss='modal', type='button')
+                      button.btn-brand(type='submit', style='width:auto;padding:.4rem 1.2rem;background:linear-gradient(135deg,#e8403f,#c0392b)') Denunciar
+
+    //- Sidebar: comentarios
+    .col-lg-4
+      .comments-panel
+        .comments-panel__header
+          span
+            i.bi.bi-chat.me-2
+            | Comentarios
+          if !pub.comments_open
+            span.tag-pill(style='background:#ffe4e4;color:#e8403f') Cerrados
+
+        if pub.comments_open && user
+          .comment-form
+            form(method='POST', action=`/publications/${pub.id}/comments`)
+              .d-flex.gap-2
+                input.comment-input(type='text', name='content', placeholder='Escribí un comentario...', required)
+                button.btn-comment-send(type='submit')
+                  i.bi.bi-send
+
+        if comments.length === 0
+          .empty-state(style='padding:2rem')
+            i.bi.bi-chat(style='font-size:2rem')
+            p Sin comentarios aún.
+        else
+          each comment in comments
+            .comment-item(id=`comment-${comment.id}`)
+              .comment-avatar
+                if comment.avatar
+                  img(src=`/uploads/avatars/${comment.avatar}`)
+                else
+                  | #{comment.username.charAt(0).toUpperCase()}
+              .comment-body
+                .comment-meta
+                  strong(style='color:var(--text)') @#{comment.username}
+                  |  · #{new Date(comment.created_at).toLocaleDateString('es-AR')}
+                .comment-text #{comment.content}
+                .d-flex.gap-2.mt-1
+                  if user && !isOwner && user.id !== comment.user_id
+                    button.btn-action.danger(style='padding:.2rem .6rem;font-size:.72rem', data-bs-toggle='modal', data-bs-target=`#reportCommentModal${comment.id}`)
+                      i.bi.bi-flag
+                      | Denunciar
+                  if isOwner
+                    form(method='POST', action=`/publications/${pub.id}/comments/${comment.id}/delete`)
+                      button.btn-action.danger(type='submit', style='padding:.2rem .6rem;font-size:.72rem')
+                        i.bi.bi-trash
+                        | Borrar
+
+                //- Modal denuncia comentario
+                if user && !isOwner && user.id !== comment.user_id
+                  .modal.fade(id=`reportCommentModal${comment.id}`, tabindex='-1')
+                    .modal-dialog
+                      .modal-content
+                        .modal-header
+                          h5.modal-title Denunciar comentario
+                          button.btn-close(data-bs-dismiss='modal')
+                        form(method='POST', action=`/publications/comments/${comment.id}/report`)
+                          .modal-body
+                            .mb-3
+                              label.form-label Motivo
+                              select.form-select(name='reason')
+                                option(value='spam') Spam
+                                option(value='acoso') Acoso
+                                option(value='contenido_inapropiado') Contenido inapropiado
+                                option(value='otro') Otro
+                            .mb-0
+                              label.form-label Descripción
+                              textarea.form-control(name='description', required, rows='2')
+                          .modal-footer
+                            button.btn-brand(type='submit', style='width:auto;padding:.4rem 1.2rem;background:linear-gradient(135deg,#e8403f,#c0392b)') Denunciar

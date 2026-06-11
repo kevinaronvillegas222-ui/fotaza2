@@ -1,0 +1,32 @@
+extends ../layouts/main
+
+block content
+  .auth-card
+    .brand-logo
+      img(src='/img/logo.png', alt='FotoShare', onerror="this.style.display='none'")
+    h2 Crear cuenta
+    if errors && errors.length
+      .alert.alert-danger.mb-3
+        each e in errors
+          div= e.msg
+    form(method='POST', action='/auth/register')
+      .mb-3
+        label.form-label Nombre completo
+        input.form-control(type='text', name='full_name', value=old.full_name || '', required, placeholder='Juan Pérez')
+      .mb-3
+        label.form-label Nombre de usuario
+        input.form-control(type='text', name='username', value=old.username || '', required, pattern='[a-zA-Z0-9_]+', placeholder='juan_foto')
+        .form-text(style='font-size:.78rem;color:#aaa') Solo letras, números y guiones bajos
+      .mb-3
+        label.form-label Email
+        input.form-control(type='email', name='email', value=old.email || '', required, placeholder='tu@email.com')
+      .mb-3
+        label.form-label Contraseña
+        input.form-control(type='password', name='password', required, minlength='6', placeholder='Mínimo 6 caracteres')
+      .mb-4
+        label.form-label Confirmar contraseña
+        input.form-control(type='password', name='confirm_password', required, placeholder='Repetí la contraseña')
+      button.btn-brand(type='submit') Crear cuenta
+    p.text-center.mt-3.mb-0(style='font-size:.88rem;color:#7b758f')
+      | ¿Ya tenés cuenta? 
+      a(href='/auth/login', style='color:#6C3FE8;font-weight:600') Iniciá sesión

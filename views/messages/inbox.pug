@@ -1,0 +1,23 @@
+extends ../layouts/main
+
+block content
+  .section-title
+    span
+    | Mensajes
+
+  .panel
+    if conversations.length === 0
+      .empty-state
+        i.bi.bi-chat-slash
+        p No tenés conversaciones aún.
+    else
+      each conv in conversations
+        a.notif-item(href=`/messages/${conv.other_id}`, style='text-decoration:none;color:inherit')
+          .comment-avatar(style='width:44px;height:44px;font-size:.95rem;flex-shrink:0')
+            if conv.other_avatar
+              img(src=`/uploads/avatars/${conv.other_avatar}`)
+            else
+              | #{conv.other_username.charAt(0).toUpperCase()}
+          div(style='flex:1;overflow:hidden')
+            strong @#{conv.other_username}
+            p(style='margin:0;font-size:.82rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis') #{conv.content}

@@ -1,0 +1,22 @@
+extends ../layouts/main
+
+block content
+  .panel(style='max-width:680px;margin:0 auto')
+    .panel__header
+      .d-flex.align-items-center.gap-2
+        .comment-avatar(style='width:34px;height:34px')
+          | #{other.username.charAt(0).toUpperCase()}
+        a(href=`/users/${other.username}`, style='font-weight:700;text-decoration:none;color:var(--text)') @#{other.username}
+    .panel__body(style='height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:.75rem;padding:1.25rem')
+      each msg in messages
+        .d-flex(class=msg.sender_id === user.id ? 'justify-content-end' : '')
+          div(class=msg.sender_id === user.id ? 'msg-bubble-me' : 'msg-bubble-other')
+            | #{msg.content}
+            br
+            small(style='opacity:.65;font-size:.7rem') #{new Date(msg.created_at).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}
+    .panel__body(style='border-top:1px solid var(--border);padding:1rem 1.25rem')
+      form(method='POST', action=`/messages/${other.id}`)
+        .d-flex.gap-2
+          input.comment-input(type='text', name='content', placeholder='Escribí un mensaje...', required)
+          button.btn-comment-send(type='submit')
+            i.bi.bi-send

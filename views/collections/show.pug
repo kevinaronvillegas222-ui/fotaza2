@@ -1,0 +1,30 @@
+extends ../layouts/main
+
+block content
+  .section-title
+    span
+    | #{collection.name}
+
+  if items.length === 0
+    .empty-state
+      i.bi.bi-folder-open
+      p Esta colección está vacía.
+  else
+    .photo-grid
+      each pub in items
+        .photo-card
+          a(href=`/publications/${pub.id}`, style='text-decoration:none;color:inherit')
+            .photo-card__thumb
+              if pub.cover
+                img(src=`/uploads/images/${pub.cover}`, loading='lazy')
+              else
+                .no-img
+                  i.bi.bi-image
+            .photo-card__body
+              .photo-card__title #{pub.title}
+              span.photo-card__author @#{pub.username}
+          .photo-card__footer
+            form(method='POST', action=`/collections/${collection.id}/remove/${pub.id}`)
+              button.btn-action.danger(type='submit', style='padding:.3rem .7rem;font-size:.75rem')
+                i.bi.bi-bookmark-x
+                | Quitar

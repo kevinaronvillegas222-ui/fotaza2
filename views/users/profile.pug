@@ -1,0 +1,69 @@
+extends ../layouts/main
+
+block content
+  .profile-cover
+  .profile-card
+    .d-flex.justify-content-between.align-items-end.flex-wrap.gap-3
+      .d-flex.align-items-end.gap-3
+        .profile-avatar
+          if profile.avatar
+            img(src=`/uploads/avatars/${profile.avatar}`, alt=profile.username)
+          else
+            | #{profile.username.charAt(0).toUpperCase()}
+        div
+          h2(style='font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;margin:0') #{profile.full_name || profile.username}
+          span(style='color:var(--text-muted);font-size:.88rem') @#{profile.username}
+          if profile.bio
+            p(style='margin:.25rem 0 0;font-size:.85rem') #{profile.bio}
+      .d-flex.gap-2
+        if !isOwner && user
+          if isFollowing
+            form(method='POST', action=`/users/${profile.username}/unfollow`)
+              button.btn-unfollow(type='submit')
+                i.bi.bi-person-dash.me-1
+                | Dejar de seguir
+          else
+            form(method='POST', action=`/users/${profile.username}/follow`)
+              button.btn-follow(type='submit')
+                i.bi.bi-person-plus.me-1
+                | Seguir
+          a.btn-action(href=`/messages/${profile.id}`)
+            i.bi.bi-chat
+            | Mensaje
+
+    .d-flex.gap-4.mt-3
+      .profile-stat
+        strong #{profile.publications_count}
+        small Publicaciones
+      .profile-stat
+        strong #{profile.followers_count}
+        small Seguidores
+      .profile-stat
+        strong #{profile.following_count}
+        small Siguiendo
+
+  .section-title
+    span
+    | Publicaciones de @#{profile.username}
+
+  if publications.length === 0
+    .empty-state
+      i.bi.bi-images
+      p Este usuario no tiene publicaciones aún.
+  else
+    .photo-grid
+      each pub in publications
+        a.photo-card(href=`/publications/${pub.id}`)
+          .photo-card__thumb
+            if pub.cover
+              img(src=`/uploads/images/${pub.cover}`, alt=pub.title, loading='lazy')
+            else
+              .no-img
+                i.bi.bi-image
+          .photo-card__body
+            .photo-card__title #{pub.title}
+          .photo-card__footer
+            .star-rating
+              i.bi.bi-star-fill
+              | #{pub.avg_rating || '—'}
+            span(style='font-size:.75rem') #{new Date(pub.created_at).toLocaleDateString('es-AR')}

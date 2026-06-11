@@ -1,0 +1,47 @@
+extends ../layouts/main
+
+block content
+  .section-title
+    span
+    | Panel del Validador
+
+  if pending.length === 0
+    .alert.alert-success
+      i.bi.bi-check-circle.me-2
+      | No hay publicaciones pendientes de revisión. ✅
+  else
+    p(style='font-size:.85rem;color:var(--text-muted);margin-bottom:1rem') #{pending.length} publicación#{pending.length !== 1 ? 'es' : ''} pendiente#{pending.length !== 1 ? 's' : ''}
+    .panel
+      .table-responsive
+        table.table.table-hover.mb-0
+          thead
+            tr
+              th ID
+              th Título
+              th Autor
+              th Denuncias
+              th Fecha
+              th Acciones
+          tbody
+            each pub in pending
+              tr
+                td
+                  span(style='color:var(--text-muted)') ##{pub.id}
+                td
+                  a(href=`/publications/${pub.id}`, style='color:var(--brand-1);font-weight:600;text-decoration:none') #{pub.title}
+                td
+                  span(style='font-size:.85rem') @#{pub.username}
+                td
+                  span(style='color:var(--brand-2);font-weight:700') #{pub.report_count}
+                td
+                  span(style='font-size:.82rem;color:var(--text-muted)') #{new Date(pub.updated_at).toLocaleDateString('es-AR')}
+                td
+                  .d-flex.gap-2
+                    form(method='POST', action=`/validator/${pub.id}/takedown`)
+                      button.btn-action.danger(type='submit', onclick="return confirm('¿Dar de baja esta publicación?')", style='padding:.3rem .7rem;font-size:.78rem')
+                        i.bi.bi-x-circle
+                        | Dar de baja
+                    form(method='POST', action=`/validator/${pub.id}/dismiss`)
+                      button.btn-action(type='submit', style='padding:.3rem .7rem;font-size:.78rem')
+                        i.bi.bi-check-circle
+                        | Desestimar

@@ -1,0 +1,51 @@
+extends ../layouts/main
+
+block content
+  if user
+    .hero-banner
+      div
+        h1 Bienvenido, #{user.full_name || user.username} 👋
+        p Explorá las mejores fotografías de la comunidad.
+      a(href='/publications/new', style='flex-shrink:0;display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,0.25);color:#fff;border:2px solid rgba(255,255,255,0.6);border-radius:50px;padding:.5rem 1.3rem;font-weight:700;font-size:.9rem;text-decoration:none;backdrop-filter:blur(4px)')
+        i.bi.bi-plus-lg
+        | Publicar foto
+  else
+    .hero-banner
+      div
+        h1 Descubrí fotografías increíbles 📸
+        p Compartí tu arte con la comunidad. Registrate gratis.
+      a(href='/auth/register', style='flex-shrink:0;display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,0.25);color:#fff;border:2px solid rgba(255,255,255,0.6);border-radius:50px;padding:.5rem 1.3rem;font-weight:700;font-size:.9rem;text-decoration:none;backdrop-filter:blur(4px)')
+        | Unirse
+
+  .section-title
+    span
+    | Publicaciones destacadas
+
+  if publications.length === 0
+    .empty-state
+      i.bi.bi-images
+      p Aún no hay publicaciones. ¡Sé el primero en compartir!
+  else
+    .photo-grid
+      each pub in publications
+        a.photo-card(href=`/publications/${pub.id}`)
+          .photo-card__thumb
+            if pub.cover
+              img(src=`/uploads/images/${pub.cover}`, alt=pub.title, loading='lazy')
+            else
+              .no-img
+                i.bi.bi-image
+            if pub.image_count > 1
+              .photo-card__badge
+                i.bi.bi-images.me-1
+                | #{pub.image_count}
+          .photo-card__body
+            .photo-card__title #{pub.title}
+            span.photo-card__author @#{pub.username}
+          .photo-card__footer
+            .star-rating
+              i.bi.bi-star-fill
+              | #{pub.avg_rating || '—'}
+              span.ms-1(style='color:#aaa') (#{pub.rating_count || 0})
+            span
+              i.bi.bi-chat.me-1

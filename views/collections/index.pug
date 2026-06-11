@@ -1,0 +1,44 @@
+extends ../layouts/main
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-3
+    .section-title(style='margin-bottom:0')
+      span
+      | Mis colecciones
+    button.btn-nav-post(data-bs-toggle='modal', data-bs-target='#newColModal', style='font-size:.85rem;padding:.4rem 1rem')
+      i.bi.bi-plus
+      | Nueva
+
+  .modal.fade#newColModal(tabindex='-1')
+    .modal-dialog.modal-sm
+      .modal-content
+        .modal-header
+          h5.modal-title Nueva colección
+          button.btn-close(data-bs-dismiss='modal')
+        form(method='POST', action='/collections')
+          .modal-body
+            input.form-control(type='text', name='name', placeholder='Ej: Paisajes, Inspiración...', required)
+          .modal-footer
+            button.btn-brand(type='submit', style='width:auto;padding:.4rem 1.2rem') Crear
+
+  if collections.length === 0
+    .empty-state
+      i.bi.bi-folder
+      p No tenés colecciones. ¡Creá una!
+  else
+    .row.g-3
+      each col in collections
+        .col-sm-6.col-md-4
+          .panel
+            .panel__body
+              h5(style='font-weight:700') #{col.name}
+              p(style='color:var(--text-muted);font-size:.85rem;margin-bottom:1rem')
+                i.bi.bi-images.me-1
+                | #{col.item_count} publicacion#{col.item_count != '1' ? 'es' : ''}
+              .d-flex.gap-2
+                a.btn-action(href=`/collections/${col.id}`, style='flex:1;justify-content:center')
+                  i.bi.bi-folder-open
+                  | Ver
+                form(method='POST', action=`/collections/${col.id}/delete`)
+                  button.btn-action.danger(type='submit', onclick='return confirm("¿Eliminar?")', style='padding:.45rem .8rem')
+                    i.bi.bi-trash

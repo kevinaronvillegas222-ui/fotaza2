@@ -1,0 +1,25 @@
+extends ../layouts/main
+
+block content
+  .section-title
+    span
+    | Publicaciones de usuarios que sigo
+
+  if publications.length === 0
+    .empty-state
+      i.bi.bi-people
+      p No hay publicaciones de los usuarios que seguís.
+      a(href='/publications', style='display:inline-flex;align-items:center;gap:.4rem;margin-top:.5rem;padding:.45rem 1.2rem;border-radius:50px;background:var(--grad);color:#fff;text-decoration:none;font-weight:600;font-size:.85rem') Explorar
+  else
+    .photo-grid
+      each pub in publications
+        a.photo-card(href=`/publications/${pub.id}`)
+          .photo-card__thumb
+            if pub.cover
+              img(src=`/uploads/images/${pub.cover}`, alt=pub.title, loading='lazy')
+            else
+              .no-img
+                i.bi.bi-image
+          .photo-card__body
+            .photo-card__title #{pub.title}
+            span.photo-card__author @#{pub.username}

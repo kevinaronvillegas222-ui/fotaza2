@@ -1,0 +1,10 @@
+extends layouts/main
+
+block content
+  .empty-state(style='padding:5rem 2rem')
+    i.bi.bi-exclamation-triangle(style='font-size:4rem;color:#e8403f;opacity:.5')
+    h2(style='font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;margin:.5rem 0') #{title}
+    p= message
+    a(href='/publications', style='display:inline-flex;align-items:center;gap:.4rem;margin-top:1rem;padding:.55rem 1.4rem;border-radius:50px;background:var(--grad);color:#fff;text-decoration:none;font-weight:600;font-size:.9rem')
+      i.bi.bi-house
+      | Volver al inicio

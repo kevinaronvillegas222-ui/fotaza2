@@ -1,0 +1,8 @@
+node_modules/
+.env
+public/uploads/images/*
+public/uploads/avatars/*
+!public/uploads/images/.gitkeep
+!public/uploads/avatars/.gitkeep
+*.log
+coverage/

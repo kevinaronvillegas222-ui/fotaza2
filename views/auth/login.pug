@@ -1,0 +1,22 @@
+extends ../layouts/main
+
+block content
+  .auth-card
+    .brand-logo
+      img(src='/img/logo.png', alt='FotoShare', onerror="this.style.display='none'")
+    h2 Iniciar sesión
+    if registered
+      .alert.alert-success.mb-3 ¡Registrado con éxito! Ya podés entrar.
+    if error
+      .alert.alert-danger.mb-3= error
+    form(method='POST', action='/auth/login')
+      .mb-3
+        label.form-label Email
+        input.form-control(type='email', name='email', required, autofocus, placeholder='tu@email.com')
+      .mb-4
+        label.form-label Contraseña
+        input.form-control(type='password', name='password', required, placeholder='••••••••')
+      button.btn-brand(type='submit') Ingresar
+    p.text-center.mt-3.mb-0(style='font-size:.88rem;color:#7b758f')
+      | ¿No tenés cuenta? 
+      a(href='/auth/register', style='color:#6C3FE8;font-weight:600') Registrate
