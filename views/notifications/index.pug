@@ -12,7 +12,7 @@ block content
     if notifications.length === 0
       .empty-state
         i.bi.bi-bell-slash
-        p No tenés notificaciones.
+        p No tenés notificaciones por el momento. 🔔
     else
       each n in notifications
         .notif-item(class=n.is_read ? '' : 'unread')
