@@ -71,7 +71,7 @@ const publicationsController = {
 
       res.redirect('/publications/' + pub.id);
     } catch (err) {
-      console.error('ERROR CREATE:', err && err.message ? err.message : err);
+      console.error('ERROR CREATE MSG:', err && err.message); console.error('ERROR CREATE STACK:', err && err.stack); console.error('ERROR CREATE FULL:', String(err));
       if (req.files) req.files.forEach(f => { try { if (f.path && !f.path.startsWith('http')) fs.unlinkSync(f.path); } catch (_) {} });
       res.render('publications/create', {
         title: 'Nueva publicaci  n',
