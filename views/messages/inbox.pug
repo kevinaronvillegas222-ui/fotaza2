@@ -9,7 +9,7 @@ block content
     if conversations.length === 0
       .empty-state
         i.bi.bi-chat-slash
-        p No tenés conversaciones aún.
+        p No tenés conversaciones aún. Cuando alguien marque "me interesa" en tu foto podrás chatear con ellos. 💬.
     else
       each conv in conversations
         a.notif-item(href=`/messages/${conv.other_id}`, style='text-decoration:none;color:inherit')
