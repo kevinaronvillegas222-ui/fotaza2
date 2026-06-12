@@ -277,4 +277,17 @@ async function applyWatermark(inputPath, outputPath, text) {
   await image.composite([{ input: Buffer.from(svgText), blend: 'over' }]).toFile(outputPath);
 }
 
+ async delete(req, res) {
+    try {
+      const pub = await PublicationModel.findById(req.params.id);
+      if (!pub) return res.status(404).render('error', { title: '404', message: 'No encontrada' });
+      if (pub.user_id !== req.user.id) return res.status(403).render('error', { title: 'Error', message: 'Sin permiso' });
+      await PublicationModel.delete(req.params.id);
+      res.redirect('/');
+    } catch (err) {
+      console.error(err);
+      res.redirect('/publications/' + req.params.id);
+    }
+  },
+
 module.exports = publicationsController;
