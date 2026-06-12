@@ -1,4 +1,4 @@
-extends ../layouts/main
+<extends ../layouts/main
 
 block content
   if pub.status === 'pending_review'
@@ -33,7 +33,13 @@ block content
                   form(method='POST', action=`/publications/${pub.id}/toggle-comments`)
                     button.dropdown-item(type='submit')
                       i.bi(class=pub.comments_open ? 'bi-chat-slash' : 'bi-chat', style='margin-right:.5rem')
-                      | #{pub.comments_open ? 'Cerrar comentarios' : 'Abrir comentarios'}
+                 | #{pub.comments_open ? 'Cerrar comentarios' : 'Abrir comentarios'}
+          li
+            form(method='POST', action=`/publications/${pub.id}/delete`)
+              button.dropdown-item(type='submit', onclick='return confirm("¿Eliminar publicación?")', style='color:#e05555')
+                i.bi.bi-trash.me-2
+                | Eliminar publicación
+
         .mt-2
           each tag in tags
             a.tag-pill.me-1(href=`/publications/search?tag=${tag}`) ##{tag}
