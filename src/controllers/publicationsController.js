@@ -277,7 +277,7 @@ async function applyWatermark(inputPath, outputPath, text) {
   await image.composite([{ input: Buffer.from(svgText), blend: 'over' }]).toFile(outputPath);
 }
 
- async delete(req, res) {
+ async deletePublication(req, res) {
     try {
       const pub = await PublicationModel.findById(req.params.id);
       if (!pub) return res.status(404).render('error', { title: '404', message: 'No encontrada' });

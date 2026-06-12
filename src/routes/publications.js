@@ -21,6 +21,6 @@ router.post('/images/:imageId/report', requireAuth, ctrl.reportImage);
 router.post('/images/:imageId/rate', requireAuth, ctrl.rateImage);
 router.post('/images/:imageId/interested', requireAuth, ctrl.markInterested);
 
-router.post('/:id/delete', requireAuth, ctrl.delete);
+router.post('/:id/delete', requireAuth, ctrl.deletePublication);
 
 module.exports = router;
