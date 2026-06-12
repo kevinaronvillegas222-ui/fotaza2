@@ -50,19 +50,16 @@ const publicationsController = {
         description,
       });
 
-      // Procesar etiquetas
       const tagList = tags.split(',').map(t => t.trim()).filter(Boolean);
       for (const tag of tagList) {
         await PublicationModel.addTag(pub.id, tag);
       }
 
-      // Procesar imágenes
       for (const file of req.files) {
         let filename = file.filename;
         const licenseValue = Array.isArray(license) ? license[0] : license || 'free';
         const watermark = Array.isArray(watermark_text) ? watermark_text[0] : watermark_text;
 
-        // Aplicar marca de agua si es copyright y tiene texto
         if (licenseValue === 'copyright' && watermark) {
           const outputPath = file.path.replace(path.extname(file.path), '_wm' + path.extname(file.path));
           await applyWatermark(file.path, outputPath, watermark);
@@ -96,7 +93,6 @@ const publicationsController = {
       const pub = await PublicationModel.findById(req.params.id);
       if (!pub) return res.status(404).render('error', { title: '404', message: 'Publicación no encontrada' });
 
-      // Usuarios anónimos solo ven publicaciones con imágenes libres
       const images = await PublicationModel.getImages(pub.id);
       const filteredImages = req.user
         ? images
@@ -113,7 +109,6 @@ const publicationsController = {
       const tags = await PublicationModel.getTags(pub.id);
       const isOwner = req.user && req.user.id === pub.user_id;
 
-      // Datos de interacción por usuario
       let userRatings = {};
       let userInterests = {};
       if (req.user) {
@@ -157,7 +152,6 @@ const publicationsController = {
 
       const comment = await CommentModel.create({ publication_id: id, user_id: req.user.id, content });
 
-      // Notificar al autor si no es él mismo
       if (pub.user_id !== req.user.id) {
         await NotificationModel.create({
           user_id: pub.user_id,
@@ -232,7 +226,6 @@ const publicationsController = {
         return res.redirect('/publications/' + img.publication_id + '?error=own_image');
       }
       await ImageModel.rate({ image_id: imageId, user_id: req.user.id, score: parseInt(score) });
-      // Notificar al autor
       if (pub.user_id !== req.user.id) {
         await NotificationModel.create({
           user_id: pub.user_id, actor_id: req.user.id,
@@ -263,19 +256,7 @@ const publicationsController = {
       res.redirect('back');
     }
   },
-};
 
-async function applyWatermark(inputPath, outputPath, text) {
-  const image = sharp(inputPath);
-  const { width, height } = await image.metadata();
-  const svgText = `
-    <svg width="${width}" height="${height}">
-      <text x="50%" y="50%" font-family="Arial" font-size="${Math.floor(width / 15)}"
-        fill="rgba(255,255,255,0.5)" text-anchor="middle" dominant-baseline="middle"
-        transform="rotate(-30, ${width / 2}, ${height / 2})">${text}</text>
-    </svg>`;
-  await image.composite([{ input: Buffer.from(svgText), blend: 'over' }]).toFile(outputPath);
-},
   async deletePublication(req, res) {
     try {
       const pub = await PublicationModel.findById(req.params.id);
@@ -288,5 +269,18 @@ async function applyWatermark(inputPath, outputPath, text) {
       res.redirect('/publications/' + req.params.id);
     }
   },
+};
+
+async function applyWatermark(inputPath, outputPath, text) {
+  const image = sharp(inputPath);
+  const { width, height } = await image.metadata();
+  const svgText = `
+    <svg width="${width}" height="${height}">
+      <text x="50%" y="50%" font-family="Arial" font-size="${Math.floor(width / 15)}"
+        fill="rgba(255,255,255,0.5)" text-anchor="middle" dominant-baseline="middle"
+        transform="rotate(-30, ${width / 2}, ${height / 2})">${text}</text>
+    </svg>`;
+  await image.composite([{ input: Buffer.from(svgText), blend: 'over' }]).toFile(outputPath);
+}
 
 module.exports = publicationsController;
