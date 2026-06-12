@@ -19,24 +19,24 @@ const publicationsController = {
   },
 
   showCreate(req, res) {
-    res.render('publications/create', { title: 'Nueva publicación', errors: [], old: {} });
+    res.render('publications/create', { title: 'Nueva publicaci  n', errors: [], old: {} });
   },
 
   createValidation: [
-    body('title').trim().isLength({ min: 3, max: 200 }).withMessage('El título debe tener entre 3 y 200 caracteres'),
-    body('tags').notEmpty().withMessage('Agregá al menos una etiqueta'),
+    body('title').trim().isLength({ min: 3, max: 200 }).withMessage('El t  tulo debe tener entre 3 y 200 caracteres'),
+    body('tags').notEmpty().withMessage('Agregǭ al menos una etiqueta'),
   ],
 
   async create(req, res) {
     const errors = validationResult(req);
 
     if (!req.files || req.files.length === 0) {
-      errors.errors.push({ msg: 'Debés subir al menos una imagen' });
+      errors.errors.push({ msg: 'DebǸs subir al menos una imagen' });
     }
     if (!errors.isEmpty()) {
-      if (req.files) req.files.forEach(f => fs.unlinkSync(f.path));
+      if (req.files) req.files.forEach(f => { try { if (f.path && !f.path.startsWith('http')) fs.unlinkSync(f.path); } catch (_) {} });
       return res.render('publications/create', {
-        title: 'Nueva publicación',
+        title: 'Nueva publicaci  n',
         errors: errors.array(),
         old: req.body,
       });
@@ -72,11 +72,11 @@ const publicationsController = {
 
       res.redirect('/publications/' + pub.id);
     } catch (err) {
-      console.error(err);
-      if (req.files) req.files.forEach(f => { try { fs.unlinkSync(f.path); } catch (_) {} });
+      console.error('ERROR CREATE:', err && err.message ? err.message : err);
+      if (req.files) req.files.forEach(f => { try { if (f.path && !f.path.startsWith('http')) fs.unlinkSync(f.path); } catch (_) {} });
       res.render('publications/create', {
-        title: 'Nueva publicación',
-        errors: [{ msg: 'Error al crear la publicación' }],
+        title: 'Nueva publicaci  n',
+        errors: [{ msg: 'Error al crear la publicaci  n' }],
         old: req.body,
       });
     }
@@ -85,7 +85,7 @@ const publicationsController = {
   async show(req, res) {
     try {
       const pub = await PublicationModel.findById(req.params.id);
-      if (!pub) return res.status(404).render('error', { title: '404', message: 'Publicación no encontrada' });
+      if (!pub) return res.status(404).render('error', { title: '404', message: 'Publicaci  n no encontrada' });
 
       const images = await PublicationModel.getImages(pub.id);
       const filteredImages = req.user
@@ -95,7 +95,7 @@ const publicationsController = {
       if (!req.user && filteredImages.length === 0) {
         return res.render('publications/show', {
           title: pub.title, pub, images: [], comments: [],
-          tags: [], isOwner: false, message: 'Iniciá sesión para ver este contenido.',
+          tags: [], isOwner: false, message: 'Iniciǭ sesi  n para ver este contenido.',
         });
       }
 
@@ -118,7 +118,7 @@ const publicationsController = {
       });
     } catch (err) {
       console.error(err);
-      res.render('error', { title: 'Error', message: 'Error al cargar la publicación' });
+      res.render('error', { title: 'Error', message: 'Error al cargar la publicaci  n' });
     }
   },
 
@@ -127,13 +127,13 @@ const publicationsController = {
       const { q, tag, license, page = 1 } = req.query;
       const result = await PublicationModel.search({ q, tag, license, page: parseInt(page) });
       res.render('publications/search', {
-        title: 'Búsqueda',
+        title: 'Bǧsqueda',
         ...result,
         query: { q, tag, license },
       });
     } catch (err) {
       console.error(err);
-      res.render('error', { title: 'Error', message: 'Error en la búsqueda' });
+      res.render('error', { title: 'Error', message: 'Error en la bǧsqueda' });
     }
   },
 
