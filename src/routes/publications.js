@@ -8,7 +8,7 @@ router.get('/', ctrl.showHome);
 router.get('/search', ctrl.search);
 
 router.get('/new', requireAuth, ctrl.showCreate);
-router.post('/new', requireAuth, uploadImages.array('images', 10), ctrl.createValidation, ctrl.create);
+router.post('/new', requireAuth, uploadImages.array('images', 10), ctrl.create);
 
 router.get('/:id', ctrl.show);
 
