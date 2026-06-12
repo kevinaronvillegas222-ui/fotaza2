@@ -28,16 +28,15 @@ const publicationsController = {
   ],
 
   async create(req, res) {
-    const errors = validationResult(req);
-
+     const validationErrors = validationResult(req);
+    const allErrors = validationErrors.array();
     if (!req.files || req.files.length === 0) {
-      errors.errors.push({ msg: 'DebǸs subir al menos una imagen' });
+      allErrors.push({ msg: 'Debés subir al menos una imagen' });
     }
-    if (!errors.isEmpty()) {
-      if (req.files) req.files.forEach(f => { try { if (f.path && !f.path.startsWith('http')) fs.unlinkSync(f.path); } catch (_) {} });
+    if (allErrors.length > 0) {
       return res.render('publications/create', {
-        title: 'Nueva publicaci  n',
-        errors: errors.array(),
+        title: 'Nueva publicación',
+        errors: allErrors,
         old: req.body,
       });
     }
