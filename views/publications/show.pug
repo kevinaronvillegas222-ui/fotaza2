@@ -43,7 +43,7 @@ block content
 
       each img in images
         .image-viewer.mb-3
-          img(src=img.url || `/uploads/images/${img.filename}`, alt=pub.title)
+          img(src=img.filename, alt=pub.title)
           .image-viewer__actions
             .star-rating.me-auto
               - var filled = Math.round(img.avg_rating)
