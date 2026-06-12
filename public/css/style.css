@@ -698,3 +698,37 @@ footer a:hover { color: var(--text); }
 @media (max-width: 480px) {
   .photo-grid { grid-template-columns: repeat(2, 1fr); gap: .5rem; }
 }
+/* ── MOBILE NAV FIX ── */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    background: rgba(10,10,10,.97);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .75rem 1rem;
+    margin-top: .5rem;
+    position: absolute;
+    top: var(--nav-h);
+    left: 1rem;
+    right: 1rem;
+    z-index: 999;
+    box-shadow: var(--shadow-md);
+  }
+  .navbar-nav {
+    gap: .25rem;
+  }
+  .navbar-nav .nav-link {
+    padding: .55rem .85rem !important;
+    border-radius: var(--radius-sm);
+  }
+  .navbar-nav .btn-nav-post {
+    margin-top: .4rem;
+    width: 100%;
+    justify-content: center;
+  }
+  .auth-card {
+    margin: 1.5rem auto;
+    padding: 1.75rem 1.25rem;
+  }
+  .pub-header h1 { font-size: 1.15rem; }
+  .image-viewer img { max-height: 320px; }
+}
