@@ -8,8 +8,15 @@ router.get('/', ctrl.showHome);
 router.get('/search', ctrl.search);
 
 router.get('/new', requireAuth, ctrl.showCreate);
-router.post('/new', requireAuth, uploadImages.array('images', 10), ctrl.create);
-
+router.post('/new', requireAuth, (req, res, next) => {
+  uploadImages.array('images', 10)(req, res, (err) => {
+    if (err) {
+      console.error('MULTER ERROR:', err.message, err.stack);
+      return res.render('publications/create', { title: 'Nueva publicación', errors: [{ msg: 'Error al subir imagen: ' + err.message }], old: req.body });
+    }
+    next();
+  });
+}, ctrl.create);
 router.get('/:id', ctrl.show);
 
 router.post('/:id/comments', requireAuth, ctrl.addComment);
