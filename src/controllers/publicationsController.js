@@ -28,6 +28,8 @@ const publicationsController = {
   ],
 
   async create(req, res) {
+    console.log('FILES:', req.files ? req.files.length : 'ninguno');
+    console.log('BODY:', JSON.stringify(req.body));
      const validationErrors = validationResult(req);
     const allErrors = validationErrors.array();
     if (!req.files || req.files.length === 0) {
