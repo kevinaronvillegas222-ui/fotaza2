@@ -23,7 +23,7 @@ block content
             .mb-3
               label.form-label Imágenes * (máx. 10)
               input.form-control(type='file', name='images', multiple, accept='image/*', required)
-              .form-text(style='font-size:.78rem;color:#aaa') JPG, PNG, WEBP, GIF · Máximo 10MB por imagen
+              .form-text(style='font-size:.78rem;color:#aaa') JPG, PNG, WEBP, GIF
             .mb-3
               label.form-label Etiquetas * (separadas por coma)
               input.form-control(type='text', name='tags', value=old.tags || '', placeholder='naturaleza, paisaje, retrato')
@@ -35,12 +35,10 @@ block content
                   option(value='copyright') Con copyright
               .col-md-6
                 label.form-label Texto de marca de agua
-                input.form-control(type='text', name='watermark_text', placeholder='© Tu Nombre 2025')
+                input.form-control(type='text', name='watermark_text', placeholder='Tu Nombre 2026')
                 .form-text(style='font-size:.78rem;color:#aaa') Solo para imágenes con copyright
             .d-flex.gap-2
               button.btn-brand(type='submit', style='width:auto;padding:.6rem 2rem')
                 i.bi.bi-cloud-upload.me-1
                 | Publicar
               a(href='/publications', style='display:inline-flex;align-items:center;padding:.6rem 1.2rem;border-radius:50px;border:1.5px solid var(--border);font-size:.9rem;font-weight:600;text-decoration:none;color:var(--text-muted)') Cancelar
-
-.form-text(style='font-size:.75rem;color:#555') Las imágenes con copyright quedarán protegidas con marca de agua.
