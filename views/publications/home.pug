@@ -31,7 +31,7 @@ block content
         a.photo-card(href=`/publications/${pub.id}`)
           .photo-card__thumb
             if pub.cover
-              img(src=`/uploads/images/${pub.cover}`, alt=pub.title, loading='lazy')
+              img(src=pub.cover, alt=pub.title, loading='lazy')
             else
               .no-img
                 i.bi.bi-image
