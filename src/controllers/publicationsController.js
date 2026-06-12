@@ -56,21 +56,15 @@ const publicationsController = {
       }
 
       for (const file of req.files) {
-        let filename = file.filename;
         const licenseValue = Array.isArray(license) ? license[0] : license || 'free';
         const watermark = Array.isArray(watermark_text) ? watermark_text[0] : watermark_text;
-
-        if (licenseValue === 'copyright' && watermark) {
-          const outputPath = file.path.replace(path.extname(file.path), '_wm' + path.extname(file.path));
-          await applyWatermark(file.path, outputPath, watermark);
-          fs.unlinkSync(file.path);
-          filename = path.basename(outputPath);
-        }
+        const fileUrl = file.path || file.secure_url || file.url || '';
+        const originalName = file.originalname || file.original_filename || 'imagen';
 
         await ImageModel.create({
           publication_id: pub.id,
-          filename,
-          original_name: file.originalname,
+          filename: fileUrl,
+          original_name: originalName,
           license: licenseValue,
           watermark_text: watermark || null,
         });
